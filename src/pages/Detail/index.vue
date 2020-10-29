@@ -41,7 +41,43 @@
                   <em>65545</em>
                 </div>
               </div>
-              <div class="priceArea2">
+              
+              <!-- 优惠券区 -->
+              <div class="couponWrap" v-if=" couponInfoList.length > 0">
+                  <div class="fl title">
+                      <i>优 惠 券</i>
+                  </div>
+                  <div class="fl fix-width">
+                      <div class="fl fix-width">
+                        <template v-for="(couponInfo, index) in couponInfoList">
+                          <a href="javascript:;" v-if="index < 3" :title="couponInfo.couponName" :key="couponInfo.couponName">
+                            <i class="red-bg i-coupon" v-if="couponInfo.couponType == 'CASH'">现金券{{ couponInfo.benefitAmount }}元</i>
+                            <i class="red-bg i-coupon" v-else-if="couponInfo.couponType == 'DISCOUNT'">折扣券{{ couponInfo.benefitDiscount }}折</i>
+                            <i class="red-bg i-coupon" v-else-if="couponInfo.couponType == 'FULL_REDUCTION'">满{{ couponInfo.conditionAmount }}减{{ couponInfo.benefitAmount }}元</i>
+                            <i class="red-bg i-coupon" v-else-if="couponInfo.couponType == 'FULL_DISCOUNT'">满{{ couponInfo.conditionNum }}件打{{ couponInfo.benefitDiscount }}折</i>
+                          </a>
+                        </template>
+                        <a href="javascript:;" v-if="couponInfoList.length > 3" class="coupon-more">更多</a>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- 促销区 -->
+              <div class="activityWrap" v-if=" activityRuleList.length > 0">
+                  <div class="fl title">
+                      <i>促　　销</i>
+                  </div>
+                  <div class="fl fix-width">
+                      <div v-for="activityRule in activityRuleList" :key="activityRule.id">
+                          <i class="red-bg">{{ activityRule.activityType == 'FULL_REDUCTION' ? '满减' : '折扣' }}</i>
+                          <em class="t-gray" v-if="activityRule.activityType == 'FULL_REDUCTION'">满{{ activityRule.conditionAmount }}减{{ activityRule.benefitAmount }}元 </em>
+                          <em class="t-gray" v-else-if="activityRule.activityType == 'FULL_DISCOUNT'">满{{ activityRule.conditionNum}}件打{{ activityRule.benefitDiscount }}折</em>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- 旧版促销 -->
+              <!-- <div class="priceArea2">
                 <div class="title">
                   <i>促&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;销</i>
                 </div>
@@ -49,7 +85,7 @@
                   <i class="red-bg">加价购</i>
                   <em class="t-gray">满999.00另加20.00元，或满1999.00另加30.00元，或满2999.00另加40.00元，即可在购物车换购热销商品</em>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="support">
               <div class="supportArea">
@@ -89,6 +125,147 @@
         </div>
       </div>
     </section>
+
+    <!--侧栏面板开始-->
+    <div class="J-global-toolbar">
+        <div class="toolbar-wrap J-wrap">
+            <div class="toolbar">
+            <!-- <div class="toolbar" :style="coupon.more == 0 ? 'width:59px;' : 'width:270px;'"> -->
+                <div class="toolbar-panels J-panel">
+
+                    <!-- 购物车 -->
+                    <div style="visibility: hidden;" class="J-content toolbar-panel tbar-panel-cart toolbar-animate-out">
+                        <h3 class="tbar-panel-header J-panel-header">
+                            <a href="" class="title"><i></i><em class="title">购物车</em></a>
+                            <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('cart');"></span>
+                        </h3>
+                        <div class="tbar-panel-main">
+                            <div class="tbar-panel-content J-panel-content">
+                                <div id="J-cart-tips" class="tbar-tipbox hide">
+                                    <div class="tip-inner">
+                                        <span class="tip-text">还没有登录，登录后商品将被保存</span>
+                                        <a href="#none" class="tip-btn J-login">登录</a>
+                                    </div>
+                                </div>
+                                <div id="J-cart-render">
+                                    <!-- 列表 -->
+                                    <div id="cart-list" class="tbar-cart-list">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 小计 -->
+                        <div id="cart-footer" class="tbar-panel-footer J-panel-footer">
+                            <div class="tbar-checkout">
+                                <div class="jtc-number"><strong class="J-count" id="cart-number">0</strong>件商品</div>
+                                <div class="jtc-sum"> 共计：<strong class="J-total" id="cart-sum">¥0</strong></div>
+                                <a class="jtc-btn J-btn" href="#none" target="_blank">去购物车结算</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 我的关注 -->
+                    <div style="visibility: hidden;" data-name="follow" class="J-content toolbar-panel tbar-panel-follow">
+                        <h3 class="tbar-panel-header J-panel-header">
+                            <a href="#" target="_blank" class="title"> <i></i> <em class="title">我的关注</em> </a>
+                            <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('follow');"></span>
+                        </h3>
+                        <div class="tbar-panel-main">
+                            <div class="tbar-panel-content J-panel-content">
+                                <div class="tbar-tipbox2">
+                                    <div class="tip-inner"><i class="i-loading"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tbar-panel-footer J-panel-footer"></div>
+                    </div>
+
+                    <!-- 我的优惠券 -->
+                    <div id="coupon-div" class="J-content toolbar-panel tbar-panel-history toolbar-animate-in">
+                        <h3 class="tbar-panel-header J-panel-header coupon-more">
+                            <a href="#none" class="title"> <i></i> <em class="title">我的优惠券</em> </a>
+                            <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('history');"></span>
+                        </h3>
+                        <div class="tbar-panel-main">
+                            <div class="tbar-panel-content J-panel-content">
+                                <div class="jt-history-wrap" style="height: 1000px;overflow-y: scroll;">
+                                    <ul style="overflow:auto;">
+
+                                        <li v-for="couponInfo in couponInfoList" :key="couponInfo.id" class="jth-item" style="width: 190px;height:100%; padding: 10px 10px;">
+                                            <div class="coupon-price">
+                                                <span class="token" v-if="couponInfo.couponType == 'CASH'">{{ couponInfo.benefitAmount }}元</span>
+                                                <span class="token" v-if="couponInfo.couponType == 'DISCOUNT'">{{ couponInfo.benefitDiscount }}折</span>
+                                                <span class="token" v-if="couponInfo.couponType == 'FULL_REDUCTION'">{{ couponInfo.benefitAmount }}元</span>
+                                                <span class="token" v-if="couponInfo.couponType == 'FULL_DISCOUNT'">{{ couponInfo.benefitDiscount }}折</span>
+
+                                                <span class="coupon-name" v-if="couponInfo.couponType == 'CASH'">现金券</span>
+                                                <span class="coupon-name" v-if="couponInfo.couponType == 'DISCOUNT'">折扣券</span>
+                                                <span class="coupon-name" v-if="couponInfo.couponType == 'FULL_REDUCTION'">满减卷</span>
+                                                <span class="coupon-name" v-if="couponInfo.couponType == 'FULL_DISCOUNT'">满件打折卷</span>
+                                            </div>
+                                            <div class="coupon-info">
+                                                <span class="condition" v-if="couponInfo.couponType == 'CASH'">现金券{{ couponInfo.benefitAmount }}元</span>
+                                                <span class="condition" v-if="couponInfo.couponType == 'DISCOUNT'">折扣券{{ couponInfo.benefitDiscount }}折</span>
+                                                <span class="condition" v-if="couponInfo.couponType == 'FULL_REDUCTION'">满{{ couponInfo.conditionAmount }}减{{ couponInfo.benefitAmount }}元</span>
+                                                <span class="condition" v-if="couponInfo.couponType == 'FULL_DISCOUNT'">满{{ couponInfo.conditionNum }}件打{{ couponInfo.benefitDiscount }}折</span>
+
+                                                <p>{{ couponInfo.rangeDesc }}</p>
+                                            </div>
+                                            <p class="coupon-time">过期时间：{{ couponInfo.expireTime }}</p>
+                                            <div class="coupon-seal" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == '1'"></div>
+                                            <div class="coupon-term" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == '2'"></div>
+                                            <button type="button" class="sui-btn btn-primary btn-large hm-action-statistics" @click="getCouponInfo(couponInfo.id)" v-if="couponInfo.isGet == 0" :hm-action = "'{\'action_id\':\'get_coupon\', \'item_type\': \'couponId\', \'item\': '+couponInfo.id+'}'">领&nbsp;取</button>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tbar-panel-footer J-panel-footer"></div>
+                    </div>
+
+                </div>
+
+                <div class="toolbar-header"></div>
+
+                <!-- 侧栏按钮 -->
+                <div class="toolbar-tabs J-tab">
+                    <div onclick="cartPanelView.tabItemClick('cart')" class="toolbar-tab tbar-tab-cart" data="购物车"
+                        tag="cart">
+                        <i class="tab-ico"></i>
+                        <em class="tab-text"></em>
+                        <span class="tab-sub J-count " id="tab-sub-cart-count">0</span>
+                    </div>
+                    <div onclick="cartPanelView.tabItemClick('follow')" class="toolbar-tab tbar-tab-follow" data="我的关注"
+                        tag="follow">
+                        <i class="tab-ico"></i>
+                        <em class="tab-text"></em>
+                        <span class="tab-sub J-count hide">0</span>
+                    </div>
+                    <div onclick="cartPanelView.tabItemClick('history')" class="toolbar-tab tbar-tab-history" data="我的足迹"
+                        tag="history">
+                        <i class="tab-ico"></i>
+                        <em class="tab-text"></em>
+                        <span class="tab-sub J-count hide">0</span>
+                    </div>
+                </div>
+
+                <div class="toolbar-footer">
+                    <div class="toolbar-tab tbar-tab-top"><a href="#"> <i class="tab-ico  "></i> <em
+                            class="footer-tab-text">顶部</em> </a></div>
+                    <div class="toolbar-tab tbar-tab-feedback"><a href="#" target="_blank"> <i class="tab-ico"></i> <em
+                            class="footer-tab-text ">反馈</em> </a></div>
+                </div>
+
+                <div class="toolbar-mini"></div>
+
+            </div>
+
+            <div id="J-toolbar-load-hook"></div>
+
+
+        </div>
+    </div>
 
     <!-- 内容详情页 -->
     <!-- <section class="product-detail">
@@ -343,7 +520,9 @@
     data () {
       return {
         currentIndex: 0, // 当前要显示图片的下标
-        skuNum: 1
+        skuNum: 1,
+        couponInfoList:[],
+        activityRuleList:[]
       }
     },
 
@@ -365,7 +544,9 @@
 
 
     mounted () {
-      this.$store.dispatch('getDetailInfo', this.$route.params.id)
+      const skuId=this.$route.params.id;
+      this.$store.dispatch('getDetailInfo', skuId)
+      this.getCouponInfoList(skuId);
     },
 
     methods: {
@@ -437,6 +618,16 @@
         valueList.forEach(value => value.isChecked = '0')
         // 将当前点击的value的isChecked指为'1'
         value.isChecked = '1'
+      },
+      async getCouponInfoList(skuId){
+        const result=await this.$API.reqCouponInfoList(skuId)
+        if(result.code===200){
+          const {couponInfoList,activityRuleList} =result.data;
+          this.couponInfoList=couponInfoList;
+          this.activityRuleList=activityRuleList;
+          console.log("couponInfoList",result.data)
+          // this.couponInfoList=
+        }
       }
     },
     
@@ -549,6 +740,46 @@
                 .t-gray {
                   color: #999;
                 }
+              }
+            }
+
+            .couponWrap,.activityWrap{
+              overflow: hidden;
+              line-height: 28px;
+              margin-top: 10px;
+              .fl{
+                float:left;
+              }
+
+              .title {
+                margin-right: 15px;
+                float: left;
+              }
+
+              .fix-width {
+                width: 520px;
+                float: left;
+                color: #999;
+                .i-coupon{
+                  background: #ffdedf;
+                  border: 1px solid #df3033;
+                  font-size: 12px;
+                  color: #df3033;
+                  padding: 3px 12px;
+                  margin-right: 12px;
+                }
+              }
+            }
+
+            .activityWrap{
+              .red-bg{
+                background: #c81623;
+                color: #fff;
+                padding: 3px;
+              }
+              .t-gray{
+                margin-left: 5px;
+                color: #999;
               }
             }
 
@@ -939,6 +1170,222 @@
               }
             }
 
+          }
+        }
+      }
+    }
+
+    .J-global-toolbar{
+      .toolbar-wrap{
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 9990;
+        width: 35px;
+        height: 100%;
+        .toolbar{
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 29px;
+          height: 100%;
+          border-right: 6px solid #7a6e6e;
+          .toolbar-panels{
+            position: absolute;
+            left: 35px;
+            top: 0;
+            width: 270px;
+            height: 100%;
+            z-index: 2;
+            background: #eceaea none repeat scroll 0 0;
+            .toolbar-panel{
+              width: 270px;
+              height: 100%;
+              position: absolute;
+              background: #eceaea none repeat scroll 0 0;
+              .tbar-panel-header{
+                position: relative;
+                width: 270px;
+                height: 40px;
+                line-height: 40px;
+                background: #eceaea none repeat scroll 0 0;
+                font-family: "microsoft yahei";
+                font-weight: 400;
+                margin: 0;
+                padding: 0;
+                .title{
+                  display: inline-block;
+                  height: 40px;
+                  color: #5e5050;
+                  font: 16px/40px "微软雅黑";
+                  i{ 
+                    display: inline-block;
+                    // background-image: url(../img/cartPanelViewIcons.png);
+                    background-repeat: no-repeat;
+                    width: 20px;
+                    height: 18px;
+                    background-position: 0 0;
+                    margin-top: 11px;   
+                    margin-right: 4px;
+                    margin-left: 10px;
+                    vertical-align: top;
+                  }
+                  em{
+                    display: inline-block;
+                    vertical-align: top;
+                    height: 40px;
+                    color: #5e5050;
+                    font: 16px/40px "微软雅黑";
+                    margin-right: 15px;
+                  }
+                }
+                .close-panel{
+                  width: 12px;
+                  height: 12px;
+                  background-position: 0 -250px;
+                  position: absolute;
+                  right: 8px;
+                  top: 16px;
+                  cursor: pointer;
+                  transition: transform 0.2s ease-out 0s;    
+                  display: inline-block;
+                  font-style: normal;
+                  // background-image: url(../img/cartPanelViewIcons.png);
+                  background-repeat: no-repeat;
+                }
+              }
+              .tbar-panel-main{
+                position: relative;
+                margin: 0;
+                padding: 0;
+                font: 12px/150% Arial, Verdana, "宋体";
+                color: #666;
+                .tbar-panel-content{
+                  width: 270px;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  position: relative;
+                  .hide{
+                    display:none;
+                  }
+                  .tbar-tipbox{
+                    .tip-inner{
+                      padding: 6px 5px;
+                      border: 1px solid #edd28b;
+                      background: #fffdee none repeat scroll 0 0;
+                      text-align: center;
+                      .tip-text{
+                        display: inline-block;
+                        line-height: 20px;
+                        vertical-align: middle;
+                        color: #333;
+                      }
+                      .tip-btn{
+                        display: inline-block;
+                        height: 20px;
+                        line-height: 20px;
+                        padding: 0 5px;
+                        margin-left: 5px;
+                        color: #fff;
+                        vertical-align: middle;
+                        background: #c81623 none repeat scroll 0 0;
+                      }
+                    }
+                  }
+                  .jt-history-wrap{
+                    height: 1000px;
+                    overflow-y: scroll;
+                    width: 235px;
+                    margin: 0 auto;
+                    .jth-item{
+                      float: left;
+                      position: relative;
+                      width: 190px;
+                      height: 100%;
+                      padding: 10px;
+                      margin-right: 15px;
+                      background: #fff none repeat scroll 0 0;
+                      margin-bottom: 15px;
+                      .coupon-price{
+                        float: left;
+                        width: 180px;
+                        font-family: Arial;
+                        font-size: 0;
+                        font-weight: 700;
+                        display: inline;
+                        color: #74d2d4;
+                        .token{
+                          position: relative;
+                          font-size: 16px;
+                          font-family: "microsoft yahei";
+                          top: -8px;
+                          left: 2px;
+                          font-weight: 400;
+                          color: #74d2d4;
+                        }
+                        .coupon-name{
+                          font-size: 12px;
+                          font-family: "Microsoft Yahei";
+                          font-weight: normal;
+                          padding-left: 8px;
+                          color: #74d2d4;
+                        }
+                      }
+                      .coupon-info{
+                        float: left;
+                        display: inline;
+                        width: 180px;
+                        margin: 0 2px 0 0;
+                        height: auto;
+                        line-height: 18px;
+                        color: #666;
+                        font-family: "Microsoft Yahei";
+                        position: relative;
+                      }
+                      .coupon-time{
+                        clear: both;
+                        color: #999;
+                        font-family: 'Microsoft Yahei';
+                        width: 190px;
+                      }
+                      .coupon-seal{
+                        position: absolute;
+                        right: 12px;
+                        bottom: 5px;
+                        width: 47px;
+                        height: 47px;
+                        background: url(https://static.360buyimg.com/item/default/1.0.37/components/toolbar/i/coupon-new.png) no-repeat;
+                      }
+                      .coupon-term{
+                        position: absolute;
+                        right: 12px;
+                        bottom: 5px;
+                        z-index: 2;
+                        width: 55px;
+                        height: 55px;
+                        background: url(https://static.360buyimg.com/item/default/1.0.37/components/toolbar/i/coupon-new.png) no-repeat -176px 0;
+                      }
+                      .sui-btn{
+                        display: inline-block;
+                        box-sizing: border-box;
+                        margin-bottom: 0;
+                        text-align: center;
+                        vertical-align: middle;
+                        cursor: pointer;
+                        border-radius: 2px;
+                        user-select: none;
+                        border: 1px solid #1299ec;    
+                        color: #fff;
+                        background-color: #28a3ef;
+                        padding: 2px 14px;
+                        line-height: 22px;
+                        font-size: 14px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

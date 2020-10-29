@@ -2,7 +2,9 @@
 包含项目中所有接口的请求函数: 接口请求函数
 每个函数的返回值都是promise
 */
+import axios from 'axios'
 import ajax from './ajax'
+import ajax2 from './ajax2'
 import mockAjax from './mockAjax'
 import { method } from 'lodash'
 
@@ -121,3 +123,11 @@ export const reqPayInfo = (orderId) => ajax(`/payment/weixin/createNative/${orde
 /api/payment/weixin/queryPayStatus/{orderId} GET
 */
 export const reqOrderStatus = orderId => ajax.get(`/payment/weixin/queryPayStatus/${orderId}`)
+
+
+/* 
+15.获取当前商品促销和优惠券信息
+/api/activity/findActivityAndCoupon/{skuId} GET
+*/
+export const reqCouponInfoList = skuId => ajax2.get(`/activity/findActivityAndCoupon/${skuId}`)
+

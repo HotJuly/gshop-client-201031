@@ -23,7 +23,7 @@
           skuPrice: 3400
           userId: "8998b27d-f291-4de7-b586-617c95f6c27f"
          -->
-        <ul class="cart-list" v-for="item in cartList" :key="item.id">
+        <ul class="cart-list" v-for="(item,index) in cartList" :key="item.id">
           <li class="cart-list-con1">
             <input type="checkbox" name="chk_list" :checked="item.isChecked===1" 
               @change="checkCartItem(item)">
@@ -34,6 +34,82 @@
           </li>
           <li class="cart-list-con4">
             <span class="price">{{item.skuPrice}}</span>
+
+            <!-- 促销区域 -->
+            <div v-if="item.activityAndCouponMap !== null && item.activityAndCouponMap.activityRuleList !== null  && item.activityAndCouponMap.activityRuleList.length > 0">
+                <a class="sales-promotion" href="javascript:;" @click="activityIndex=index">促销<b></b></a>
+                <div class="promotion-tips" v-if="activityIndex===index">
+                    <div class="promotion-tit" style="width: 43px;">促销<b></b></div>
+                    <div class="promotion-cont">
+                        <ul>
+                          <template  v-for="(activityRule, index) in item.activityAndCouponMap.activityRuleList">
+                            <!-- 满减 -->
+                            <li :key="activityRule.id" v-if="activityRule.activityType == 'FULL_REDUCTION'">
+                              <input type="radio" :name="item.skuId" :value="index" v-model="item.checked">
+                              满{{ activityRule.conditionAmount }}减{{ activityRule.benefitAmount }}元
+                            </li>
+                            <!-- 满减 -->
+                            <li :key="activityRule.id" v-else-if="activityRule.activityType == 'FULL_DISCOUNT'">
+                              <input type="radio" :name="item.skuId" :value="index" v-model="item.checked"/>
+                              满{{ activityRule.conditionNum}}件打{{ activityRule.benefitDiscount }}折
+                            </li>
+                          </template>
+                        </ul>
+                        <div class="op-btns ac mt20">
+                            <a href="#none" class="btn-1 select-promotion" @click="activityIndex=null">确定</a>
+                            <a href="#none" class="btn-9 ml10 del cancel-promotion" @click="activityIndex=null">取消</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="clr"></div>
+            </div>
+
+            <!-- 优惠券区域 -->
+            <div v-if="item.activityAndCouponMap !== null && item.activityAndCouponMap.couponInfoList !== null && item.activityAndCouponMap.couponInfoList.length > 0">
+                <a class="sales-promotion" href="javascript:;" @click="couponIndex=index">优惠券<b></b></a>
+                <div class="promotion-tips" style="width: 315px;" v-if="couponIndex===index">
+                    <div class="promotion-tit">优惠券<b></b></div>
+                    <div class="promotion-cont" style="width:auto;">
+
+                        <div class="p-coupon-item p-coupon-item-gray" v-for="couponInfo in item.activityAndCouponMap.couponInfoList" :key="couponInfo.id">
+                            <div class="coupon-price" style="border-color:#e74649;">
+                                <span class="txt" v-if="couponInfo.couponType == 'CASH'" style="color: #e74649;">{{ couponInfo.benefitAmount }}元</span>
+                                <span class="txt" v-if="couponInfo.couponType == 'DISCOUNT'" style="color: #e74649;">{{ couponInfo.benefitDiscount }}折</span>
+                                <span class="txt" v-if="couponInfo.couponType == 'FULL_REDUCTION'" style="color: #e74649;">{{ couponInfo.benefitAmount }}元</span>
+                                <span class="txt" v-if="couponInfo.couponType == 'FULL_DISCOUNT'" style="color: #e74649;">{{ couponInfo.benefitDiscount }}折</span>
+                            </div>
+                            <div class="coupon-msg">
+                                <div>
+                                    <span class="ctype" v-if="couponInfo.couponType == 'CASH'">现金券</span>
+                                    <span class="ctype" v-if="couponInfo.couponType == 'DISCOUNT'">折扣券</span>
+                                    <span class="ctype" v-if="couponInfo.couponType == 'FULL_REDUCTION'">满减卷</span>
+                                    <span class="ctype" v-if="couponInfo.couponType == 'FULL_DISCOUNT'">满件打折卷</span>
+
+                                    <span class="cinfo" v-if="couponInfo.couponType == 'CASH'">现金券{{ couponInfo.benefitAmount }}元</span>
+                                    <span class="cinfo" v-if="couponInfo.couponType == 'DISCOUNT'">折扣券{{ couponInfo.benefitDiscount }}折</span>
+                                    <span class="cinfo" v-if="couponInfo.couponType == 'FULL_REDUCTION'">满{{ couponInfo.conditionAmount }}减{{ couponInfo.benefitAmount }}元</span>
+                                    <span class="cinfo" v-if="couponInfo.couponType == 'FULL_DISCOUNT'">满{{ couponInfo.conditionNum }}件打{{ couponInfo.benefitDiscount }}折</span>
+
+                                </div>
+                                <div class="clearfix">
+                                    <div class="ftx-03 J_cpitems">{{ couponInfo.rangeDesc }}</div>
+                                    <i class="zyc-ico"></i>
+                                </div>
+                            </div>
+                            <div class="coupon-opbtns">
+                                <span class="ftx-03" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == 'NOT_USED'">已领取</span>
+                                <span class="ftx-03" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == 'USED'">已使用</span>
+                                <span class="btn-1 coupon-btn" v-if="couponInfo.isGet == 0" @click="getCouponInfo(item.skuId, couponInfo.id)">领取</span>
+                            </div>
+                        </div>
+
+                        <div class="op-btns ac mt20">
+                            <a href="#none" class="btn-9 ml10 del cancel-promotion" @click="couponIndex=null">取消</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="clr"></div>
+            </div>
           </li>
           <li class="cart-list-con5">
             <a href="javascript:void(0)" class="mins" @click="updateSkuNum(item, -1)">-</a>
@@ -88,6 +164,12 @@
   import debounce from 'lodash/debounce'
   export default {
     name: 'ShopCart',
+    data(){
+      return {
+        activityIndex:null,
+        couponIndex:null
+      }
+    },
 
     computed: {
       cartList () {
@@ -269,7 +351,9 @@
         .cart-list {
           padding: 10px;
           border-bottom: 1px solid #ddd;
-          overflow: hidden;
+          width:1178px;
+          height:82px;
+          // overflow: hidden;
 
           &>li {
             float: left;
@@ -298,7 +382,165 @@
 
           .cart-list-con4 {
             width: 15%;
-
+            div{
+              position: relative;
+              .sales-promotion{
+                color: #E2231A;
+                display: inline-block;
+                width: 56px;
+                border: 1px solid #f9d2d3;
+                text-align: left;
+                line-height: 20px;
+                padding: 0 5px 0 5px;
+                cursor: pointer;
+                background: #fff;
+                text-decoration: none;
+                color: #E2231A;
+                overflow: hidden;
+                position: relative;
+                b{
+                  position: absolute;
+                  right: 8px;
+                  top: 8px;
+                  width: 7px;
+                  height: 4px;
+                  overflow: hidden;
+                  font-weight: bolder;
+                  background: url(https://misc.360buyimg.com/user/cart/css/i/cart-icons-202004.png) -82px -3px;
+                }
+              }
+              .promotion-tips{
+                position: absolute;
+                padding: 10px 14px 10px 10px;
+                width: 276px;
+                top:19px;
+                box-shadow: 0 0 2px 2px #eee;
+                border: 1px solid #e4393c;
+                background: none repeat scroll 0 0 #fff;
+                text-align: left;
+                z-index:99;
+                .promotion-tit{
+                  position: absolute;
+                  height: 19px;
+                  line-height: 17px;
+                  border: 1px solid #e4393c;
+                  border-bottom: 0;
+                  top: -20px;
+                  left: -1px;
+                  background: #fff;
+                  color: #E2231A;
+                  padding: 0 15px 0 8px;
+                  cursor: pointer;
+                  width: 43px;
+                }
+                .promotion-cont{    
+                  position: relative;
+                  line-height: 23px;
+                  width: 280px;
+                  ul{
+                    display: block;
+                    list-style-type: disc;
+                    margin-block-start: 1em;
+                    margin-block-end: 1em;
+                    margin-inline-start: 0px;
+                    margin-inline-end: 0px;
+                    padding-inline-start: 40px;
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                    border-bottom: 0px solid #ddd;
+                    li{
+                      display: list-item;
+                      text-align: -webkit-match-parent;
+                      margin: 0;
+                      padding: 2px 5px;
+                      .input{
+                        border: 1px solid #ddd;
+                        cursor: pointer;
+                        box-sizing: border-box;
+                        padding: 0;
+                      }
+                    }
+                  }
+                  .op-btns{
+                    margin-top: 20px;
+                    text-align: center;
+                    .select-promotion{
+                      font-family: arial,Microsoft YaHei;
+                      display: inline-block;
+                      height: 25px;
+                      line-height: 25px;
+                      background-color: #e74649;
+                      background-image: linear-gradient(0deg,#e74649 0,#df3134);
+                      border-radius: 3px;
+                      color: #fff;
+                      font-size: 12px;
+                      font-weight: 400;
+                      padding: 0 10px;
+                      vertical-align: middle;
+                      cursor: pointer;
+                      border: 0;
+                      float: none;
+                      transition: all .2s ease-out;
+                    }
+                    .cancel-promotion{
+                      margin-left: 10px;
+                      transition: all .2s ease-out;
+                      background: #fffdee;
+                      font-family: arial,Microsoft YaHei;
+                      border-radius: 1px;
+                      display: inline-block;
+                      height: 23px;
+                      line-height: 23px;
+                      background-color: #f2f2f2;
+                      background-image: linear-gradient(0deg,#f2f2f2 0,#f7f7f7);
+                      border-radius: 3px;
+                      color: #323333;
+                      font-size: 12px;
+                      font-weight: 400;
+                      padding: 0 9px;
+                      vertical-align: middle;
+                      cursor: pointer;
+                      float: none;
+                      border: 1px solid #e1e1e1;
+                    }
+                  }
+                  .p-coupon-item{
+                    display: block;
+                    margin: 10px 0;
+                    overflow:hidden;
+                    .coupon-price{
+                      border-color: rgb(231, 70, 73);
+                      position: relative;
+                      height: 29px;
+                      line-height: 29px;
+                      width: 54px;
+                      float: left;
+                      font-size: 0;
+                      margin: 2px 10px 0 0;
+                      border: 1px solid #f9d2d3;
+                      text-align: center;
+                      padding: 0 2px;
+                      .txt{
+                        font-size: 12px;
+                        color: rgb(231, 70, 73);
+                        font-family: verdana;
+                        font-weight: 700;
+                      }
+                    }
+                    .coupon-msg{
+                      float: left;
+                      width: 200px;
+                      line-height: 18px;
+                      font-weight: 400;
+                    }
+                    .coupon-opbtns{
+                      float: left;
+                    }
+                  }
+                }
+              }
+            }
           }
 
           .cart-list-con5 {

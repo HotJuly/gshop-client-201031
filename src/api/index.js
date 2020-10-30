@@ -6,6 +6,7 @@ import axios from 'axios'
 import ajax from './ajax'
 import ajax2 from './ajax2'
 import user from './ajax-user'
+import cart from './ajax-cart'
 import mockAjax from './mockAjax'
 import { method } from 'lodash'
 
@@ -28,24 +29,25 @@ export const reqProductList = (searchParams) => ajax.post('/list', searchParams)
 export const reqDetailInfo = (skuId) => ajax.get(`/item/${skuId}`)
 
 // 6.获取购物车列表 /api/cart/cartList
-export const reqCartList = () => ajax.get('/cart/cartList')
+//注意:接口已修改
+export const reqCartList = () => cart.get('/cart/cartList')
 
 // 7.添加到购物车(对已有物品进行数量改动)
 /* 
 skuId: 商品ID
 skuNum: 变化的数量   如果增加用正数, 如果减少用负数
 */
-export const reqAddToCart = (skuId, skuNum) => ajax.post(`/cart/addToCart/${skuId}/${skuNum}`)
+export const reqAddToCart = (skuId, skuNum) => cart.post(`/cart/addToCart/${skuId}/${skuNum}`)
 
 // 8.切换商品选中状态
 /* 
 0代表取消选中
 1代表选中
 */
-export const reqCheckCartItem = (skuId, isChecked) => ajax.get(`/cart/checkCart/${skuId}/${isChecked}`)
+export const reqCheckCartItem = (skuId, isChecked) => cart.get(`/cart/checkCart/${skuId}/${isChecked}`)
 
 // 9.删除购物车商品
-export const reqDeleteCartItem = (skuId) => ajax.delete(`/cart/deleteCart/${skuId}`)
+export const reqDeleteCartItem = (skuId) => cart.delete(`/cart/deleteCart/${skuId}`)
 
 /* 
 登陆

@@ -18,6 +18,13 @@ module.exports = {
           '^/api2':'/api'
         }
       },
+      '/cartapi':{
+        target:'http://39.99.186.36:8201',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/cartapi':'/api'
+        }
+      },
       '/userapi':{
         target:'http://39.99.186.36:8208',
         changeOrigin:true,

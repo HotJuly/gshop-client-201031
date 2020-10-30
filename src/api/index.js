@@ -5,6 +5,7 @@
 import axios from 'axios'
 import ajax from './ajax'
 import ajax2 from './ajax2'
+import user from './ajax-user'
 import mockAjax from './mockAjax'
 import { method } from 'lodash'
 
@@ -50,8 +51,9 @@ export const reqDeleteCartItem = (skuId) => ajax.delete(`/cart/deleteCart/${skuI
 登陆
 /api/user/passport/login POST  mobile/password
 */
-export function reqLogin (mobile, password) {
-  return ajax.post('/user/passport/login', {mobile, password})
+export function reqLogin (phone, password) {
+  // 注意:更换新接口,参数从mobile改为phone,配置新代理
+  return user.post('/user/passport/login', {phone, password})
   // return ajax({
   //   url: '/user/passport/login',
   //   method: 'POST',
@@ -130,4 +132,11 @@ export const reqOrderStatus = orderId => ajax.get(`/payment/weixin/queryPayStatu
 /api/activity/findActivityAndCoupon/{skuId} GET
 */
 export const reqCouponInfoList = skuId => ajax2.get(`/activity/findActivityAndCoupon/${skuId}`)
+
+/* 
+16.领取优惠券
+/api/activity/auth/getCouponInfo/{couponId} GET
+*/
+export const reqCouponInfo = couponId => ajax2.get(`/activity/auth/getCouponInfo/${couponId}`)
+
 

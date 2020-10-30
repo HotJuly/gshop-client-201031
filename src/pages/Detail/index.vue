@@ -43,7 +43,7 @@
               </div>
               
               <!-- 优惠券区 -->
-              <div class="couponWrap" v-if=" couponInfoList.length > 0">
+              <div class="couponWrap" v-if=" couponInfoList.length > 0" @click="isShow=!isShow">
                   <div class="fl title">
                       <i>优 惠 券</i>
                   </div>
@@ -129,15 +129,16 @@
     <!--侧栏面板开始-->
     <div class="J-global-toolbar">
         <div class="toolbar-wrap J-wrap">
-            <div class="toolbar">
+            <!-- <div class="toolbar"> -->
             <!-- <div class="toolbar" :style="coupon.more == 0 ? 'width:59px;' : 'width:270px;'"> -->
+            <div class="toolbar" :style="isShow?'width:270px':''">
                 <div class="toolbar-panels J-panel">
 
                     <!-- 购物车 -->
                     <div style="visibility: hidden;" class="J-content toolbar-panel tbar-panel-cart toolbar-animate-out">
                         <h3 class="tbar-panel-header J-panel-header">
                             <a href="" class="title"><i></i><em class="title">购物车</em></a>
-                            <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('cart');"></span>
+                            <span class="close-panel J-close"></span>
                         </h3>
                         <div class="tbar-panel-main">
                             <div class="tbar-panel-content J-panel-content">
@@ -168,7 +169,7 @@
                     <div style="visibility: hidden;" data-name="follow" class="J-content toolbar-panel tbar-panel-follow">
                         <h3 class="tbar-panel-header J-panel-header">
                             <a href="#" target="_blank" class="title"> <i></i> <em class="title">我的关注</em> </a>
-                            <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('follow');"></span>
+                            <span class="close-panel J-close"></span>
                         </h3>
                         <div class="tbar-panel-main">
                             <div class="tbar-panel-content J-panel-content">
@@ -184,7 +185,7 @@
                     <div id="coupon-div" class="J-content toolbar-panel tbar-panel-history toolbar-animate-in">
                         <h3 class="tbar-panel-header J-panel-header coupon-more">
                             <a href="#none" class="title"> <i></i> <em class="title">我的优惠券</em> </a>
-                            <span class="close-panel J-close" onclick="cartPanelView.tbar_panel_close('history');"></span>
+                            <span class="close-panel J-close"></span>
                         </h3>
                         <div class="tbar-panel-main">
                             <div class="tbar-panel-content J-panel-content">
@@ -212,9 +213,9 @@
                                                 <p>{{ couponInfo.rangeDesc }}</p>
                                             </div>
                                             <p class="coupon-time">过期时间：{{ couponInfo.expireTime }}</p>
-                                            <div class="coupon-seal" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == '1'"></div>
-                                            <div class="coupon-term" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == '2'"></div>
-                                            <button type="button" class="sui-btn btn-primary btn-large hm-action-statistics" @click="getCouponInfo(couponInfo.id)" v-if="couponInfo.isGet == 0" :hm-action = "'{\'action_id\':\'get_coupon\', \'item_type\': \'couponId\', \'item\': '+couponInfo.id+'}'">领&nbsp;取</button>
+                                            <div class="coupon-seal" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == 'NOT_USED'"></div>
+                                            <div class="coupon-term" v-if="couponInfo.isGet > 0 && couponInfo.couponStatus == 'USED'"></div>
+                                            <button type="button" class="sui-btn btn-primary btn-large hm-action-statistics" @click="getCouponInfo(couponInfo.id,couponInfo)" v-if="couponInfo.isGet == 0">领&nbsp;取</button>
                                         </li>
 
                                     </ul>
@@ -230,19 +231,19 @@
 
                 <!-- 侧栏按钮 -->
                 <div class="toolbar-tabs J-tab">
-                    <div onclick="cartPanelView.tabItemClick('cart')" class="toolbar-tab tbar-tab-cart" data="购物车"
+                    <div class="toolbar-tab tbar-tab-cart" data="购物车"
                         tag="cart">
                         <i class="tab-ico"></i>
                         <em class="tab-text"></em>
                         <span class="tab-sub J-count " id="tab-sub-cart-count">0</span>
                     </div>
-                    <div onclick="cartPanelView.tabItemClick('follow')" class="toolbar-tab tbar-tab-follow" data="我的关注"
+                    <div class="toolbar-tab tbar-tab-follow" data="我的关注"
                         tag="follow">
                         <i class="tab-ico"></i>
                         <em class="tab-text"></em>
                         <span class="tab-sub J-count hide">0</span>
                     </div>
-                    <div onclick="cartPanelView.tabItemClick('history')" class="toolbar-tab tbar-tab-history" data="我的足迹"
+                    <div class="toolbar-tab tbar-tab-history" data="我的足迹"
                         tag="history">
                         <i class="tab-ico"></i>
                         <em class="tab-text"></em>
@@ -522,7 +523,8 @@
         currentIndex: 0, // 当前要显示图片的下标
         skuNum: 1,
         couponInfoList:[],
-        activityRuleList:[]
+        activityRuleList:[],
+        isShow:false
       }
     },
 
@@ -627,6 +629,15 @@
           this.activityRuleList=activityRuleList;
           console.log("couponInfoList",result.data)
           // this.couponInfoList=
+        }
+      },
+      async getCouponInfo(couponId,couponInfo){
+        // console.log('getCouponInfo',couponId)
+        let result = await this.$API.reqCouponInfo(couponId);
+        if(result.code===200){
+          couponInfo.couponStatus == 'NOT_USED'
+        }else{
+          alert('优惠券领取失败,请刷新重试')
         }
       }
     },
@@ -1190,6 +1201,7 @@
           width: 29px;
           height: 100%;
           border-right: 6px solid #7a6e6e;
+          transition:width 400ms ease;
           .toolbar-panels{
             position: absolute;
             left: 35px;
@@ -1220,15 +1232,15 @@
                   font: 16px/40px "微软雅黑";
                   i{ 
                     display: inline-block;
-                    // background-image: url(../img/cartPanelViewIcons.png);
+                    background-image: url(./images/cartPanelViewIcons.png);
                     background-repeat: no-repeat;
-                    width: 20px;
-                    height: 18px;
-                    background-position: 0 0;
-                    margin-top: 11px;   
                     margin-right: 4px;
                     margin-left: 10px;
                     vertical-align: top;
+                    width: 20px;
+                    height: 17px;
+                    margin-top: 11px;
+                    background-position: 0 -100px;
                   }
                   em{
                     display: inline-block;
@@ -1250,7 +1262,7 @@
                   transition: transform 0.2s ease-out 0s;    
                   display: inline-block;
                   font-style: normal;
-                  // background-image: url(../img/cartPanelViewIcons.png);
+                  background-image: url(./images/cartPanelViewIcons.png);
                   background-repeat: no-repeat;
                 }
               }
@@ -1385,6 +1397,121 @@
                   }
                 }
               }
+            }
+          }
+          .toolbar-tab{
+            position: relative;
+            width: 35px;
+            height: 35px;
+            margin-bottom: 1px;
+            cursor: pointer;
+            background-color: #7a6e6e;
+            border-radius: 3px 0 0 3px;
+            font: 12px/150% Arial, Verdana, "宋体";
+            color: #666;
+            display: inline-block;
+            background-image: url(./images/cartPanelViewIcons.png);
+            background-repeat: no-repeat;
+            .tab-text{
+              width: 62px;
+              height: 35px;
+              line-height: 35px;
+              color: #fff;
+              text-align: center;
+              font-family: "微软雅黑";
+              position: absolute;
+              z-index: 1;
+              left: 35px;
+              top: 0;
+              background-color: #7a6e6e;
+              border-radius: 3px 0 0 3px;
+              transition: left 0.3s ease-in-out 0.1s;
+              font-style: normal;
+              margin: 0;
+              padding: 0;
+              cursor: pointer;
+            }
+            .tab-sub{
+              position: absolute;
+              z-index: 3;
+              right: 2px;
+              top: -5px;
+              height: 11px;
+              padding: 1px 2px;
+              border: 1px solid #e1251b;
+              overflow: hidden;
+              color: #fff;
+              font: 11px/11px verdana;
+              text-align: center;
+              min-width: 11px;
+              border-radius: 10px;
+              background-color: #e1251b;
+              cursor: pointer;
+            }
+          }
+          .tab-ico{
+            width: 34px;
+            height: 35px;
+            margin-left: 1px;
+            position: relative;
+            z-index: 2;
+            background-color: #7a6e6e;
+          }
+          .toolbar-tabs{
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 35px;
+            margin-top: -61px;
+            .tbar-tab-cart{
+              background-position: -50px 0;
+            }
+            .tbar-tab-follow{
+              background-position: -50px -50px;
+            }
+            .tbar-tab-history{
+              background-position: -50px -100px;
+            }
+          }
+          .toolbar-footer{
+            position: absolute;
+            bottom: -1px;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font: 12px/150% Arial, Verdana, "宋体";
+            color: #666;
+            .tbar-tab-top{
+              background-position: -50px -250px;
+            }
+            .tbar-tab-feedback{
+              background-position: -50px -300px;
+            }
+            a{
+              margin: 0;
+              padding: 0;
+              font: 12px/150% Arial, Verdana, "宋体";
+              color: #666;  
+              text-decoration: none;
+            }
+            .footer-tab-text{
+              width: 50px;
+              height: 35px;
+              line-height: 35px;
+              color: #fff;
+              text-align: center;
+              font-family: "微软雅黑";
+              position: absolute;
+              z-index: 1;
+              left: 35px;
+              top: 0;
+              background-color: #7a6e6e;
+              border-radius: 3px 0 0 3px;
+              transition: left 0.3s ease-in-out 0.1s;
+              font-style: normal;
+              margin: 0;
+              padding: 0;
+              cursor: pointer;
             }
           }
         }

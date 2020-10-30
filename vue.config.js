@@ -17,6 +17,13 @@ module.exports = {
         pathRewrite:{
           '^/api2':'/api'
         }
+      },
+      '/userapi':{
+        target:'http://39.99.186.36:8208',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/userapi':'/api'
+        }
       }
     }
   },

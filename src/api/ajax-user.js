@@ -16,8 +16,8 @@ import store from '@/store'
 // 创建instance
 
 const instance = axios.create({
-    // baseURL: 'http://39.99.186.36:8200/api',
-    baseURL: '/api2',
+    // baseURL: 'http://39.99.186.36:8208/api',
+    baseURL: '/userapi',
     timeout: 20000
   })
 

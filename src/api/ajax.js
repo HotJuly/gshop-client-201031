@@ -34,8 +34,10 @@ instance.interceptors.request.use(config => {
   
   /* 6. 如果当前有token, 自动携带token的请求头 */
   const token = store.state.user.userInfo.token
+  const userId = store.state.user.userInfo.userId
   if (token) {
     config.headers.token = token
+    config.headers.userId = userId
   }
   
   return config // 必须返回config

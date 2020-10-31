@@ -11,6 +11,8 @@ import './plugins/elements'
 import './plugins/lazyload'
 import * as API from '@/api'
 
+import '@/components/AddressModel/index';
+
 Vue.prototype.$API = API // 将包含所有接口请求函数的对象保存到Vue原型对象
 
 Vue.config.productionTip = false

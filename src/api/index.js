@@ -5,8 +5,9 @@
 import axios from 'axios'
 import ajax from './ajax'
 import ajax2 from './ajax2'
-import user from './ajax-user'
 import cart from './ajax-cart'
+import order from './ajax-order'
+import user from './ajax-user'
 import mockAjax from './mockAjax'
 import { method } from 'lodash'
 
@@ -30,24 +31,24 @@ export const reqDetailInfo = (skuId) => ajax.get(`/item/${skuId}`)
 
 // 6.获取购物车列表 /api/cart/cartList
 //注意:接口已修改
-export const reqCartList = () => cart.get('/cart/cartList')
+export const reqCartList = () => ajax2.get('/cart/cartList')
 
 // 7.添加到购物车(对已有物品进行数量改动)
 /* 
 skuId: 商品ID
 skuNum: 变化的数量   如果增加用正数, 如果减少用负数
 */
-export const reqAddToCart = (skuId, skuNum) => cart.post(`/cart/addToCart/${skuId}/${skuNum}`)
+export const reqAddToCart = (skuId, skuNum) => ajax2.post(`/cart/addToCart/${skuId}/${skuNum}`)
 
 // 8.切换商品选中状态
 /* 
 0代表取消选中
 1代表选中
 */
-export const reqCheckCartItem = (skuId, isChecked) => cart.get(`/cart/checkCart/${skuId}/${isChecked}`)
+export const reqCheckCartItem = (skuId, isChecked) => ajax2.get(`/cart/checkCart/${skuId}/${isChecked}`)
 
 // 9.删除购物车商品
-export const reqDeleteCartItem = (skuId) => cart.delete(`/cart/deleteCart/${skuId}`)
+export const reqDeleteCartItem = (skuId) => ajax2.delete(`/cart/deleteCart/${skuId}`)
 
 /* 
 登陆
@@ -55,7 +56,7 @@ export const reqDeleteCartItem = (skuId) => cart.delete(`/cart/deleteCart/${skuI
 */
 export function reqLogin (phone, password) {
   // 注意:更换新接口,参数从mobile改为phone,配置新代理
-  return user.post('/user/passport/login', {phone, password})
+  return ajax2.post('/user/passport/login', {phone, password})
   // return ajax({
   //   url: '/user/passport/login',
   //   method: 'POST',
@@ -89,8 +90,9 @@ export const reqOrders = (page, limit) => ajax(`/order/auth/${page}/${limit}`)
 /* 
 10.获取订单交易页信息
 /api/order/auth/trade GET
+注意:接口已换,已配置新代理
 */
-export const reqTradeInfo = () => ajax('/order/auth/trade')
+export const reqTradeInfo = () => ajax2('/order/auth/trade')
 
 /* 
 12.提交订单
@@ -105,7 +107,7 @@ export const reqTradeInfo = () => ajax('/order/auth/trade')
       "orderDetailList": []
   }
 */
-export const reqSumitOrder = (tradeNo, tradeInfo) => ajax({
+export const reqSumitOrder = (tradeNo, tradeInfo) => ajax2({
   url: '/order/auth/submitOrder',
   method: 'POST',
   params: {tradeNo},
@@ -141,4 +143,45 @@ export const reqCouponInfoList = skuId => ajax2.get(`/activity/findActivityAndCo
 */
 export const reqCouponInfo = couponId => ajax2.get(`/activity/auth/getCouponInfo/${couponId}`)
 
+/* 
+17.获取用户地址列表
+/api/user/userAddress/auth/findUserAddressList GET
+*/
+export const reqUserAddressList = () => ajax2.get(`/user/userAddress/auth/findUserAddressList`)
 
+/* 
+18.获取地址大区列表
+/api/user/userAddress/auth/findBaseRegion GET
+*/
+export const reqAddressBaseRegion = () => ajax2.get(`/user/userAddress/auth/findBaseRegion`)
+
+/* 
+19.根据地址大区获取省份
+/api/user/userAddress/auth/findBaseProvinceByRegionId/{regionId} GET
+*/
+export const reqAddressBaseProvinceByRegionId = (regionId) => ajax2.get(`/user/userAddress/auth/findBaseProvinceByRegionId/${regionId}`)
+
+
+/* 
+20.新增用户地址
+/api/user/userAddress/auth/save POST
+*/
+export const reqSaveUserAddress = (userAddressInfo) => ajax2.post(`/user/userAddress/auth/save`,userAddressInfo)
+
+/* 
+21.删除用户地址
+/api/user/userAddress/auth/delete/{userAddressId} GET
+*/
+export const reqRemoveUserAddress = (userAddressId) => ajax2.get(`/user/userAddress/auth/delete/${userAddressId}`)
+
+/* 
+22.更新用户地址
+/api/user/userAddress/auth/update POST
+*/
+export const reqUpdateUserAddress = (userAddressId) => ajax2.post(`/user/userAddress/auth/update`,userAddressId)
+
+/* 
+23.获取订单详情
+/api/order/auth/getOrderDetail/{orderDetailId} GET
+*/
+export const reqOrderDetail = (orderDetailId) => ajax2.get(`/order/auth/getOrderDetail/${orderDetailId}`)

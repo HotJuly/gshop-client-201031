@@ -5,12 +5,14 @@ import { getUserTempId, saveUserInfo, getUserInfo, removeUserInfo } from '@/util
 import {
   reqRegister,
   reqLogin,
-  reqLogout
+  reqLogout,
+  reqUserAddressList
 } from '@/api'
 
 const state = {
   userInfo: getUserInfo(),
-  userTempId: getUserTempId()
+  userTempId: getUserTempId(),
+  userAddressList:[]
 }
 const mutations = {
   RECEIVE_USER_INFO (state, userInfo) {
@@ -19,6 +21,10 @@ const mutations = {
 
   RESET_USER_INFO (state) {
     state.userInfo = {}
+  },
+
+  RECEIVE_USER_ADDRESS_LIST(state, userAddressList){
+    state.userAddressList=userAddressList;
   }
 }
 const actions = {
@@ -66,6 +72,14 @@ const actions = {
       throw new Error(result.message || '退出登陆失败')
     }
   },
+  async getUserAddressList({commit}){
+    const result = await reqUserAddressList()
+    if (result.code==200) {
+      commit('RECEIVE_USER_ADDRESS_LIST',result.data)
+    } else {
+      throw new Error(result.message || '获取用户地址失败')
+    }
+  }
 }
 const getters = {}
 

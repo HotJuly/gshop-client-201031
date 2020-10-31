@@ -12,26 +12,37 @@ module.exports = {
         }
       },
       '/api2':{
-        target:'http://39.99.186.36:8200',
+        // target:'http://39.99.186.36:8200',
+        target:'http://39.99.186.36',
         changeOrigin:true,
         pathRewrite:{
           '^/api2':'/api'
         }
       },
-      '/cartapi':{
-        target:'http://39.99.186.36:8201',
-        changeOrigin:true,
-        pathRewrite:{
-          '^/cartapi':'/api'
-        }
-      },
-      '/userapi':{
-        target:'http://39.99.186.36:8208',
-        changeOrigin:true,
-        pathRewrite:{
-          '^/userapi':'/api'
-        }
-      }
+      // '/cartapi':{
+      //   // target:'http://39.99.186.36:8201',
+      //   target:'http://api.atguigu.cn',
+      //   changeOrigin:true,
+      //   pathRewrite:{
+      //     '^/cartapi':'/api'
+      //   }
+      // },
+      // '/orderapi':{
+      //   // target:'http://39.99.186.36:8204',
+      //   target:'http://39.99.186.36',
+      //   changeOrigin:true,
+      //   pathRewrite:{
+      //     '^/orderapi':'/api'
+      //   }
+      // },
+      // '/userapi':{
+      //   // target:'http://39.99.186.36:8208',
+      //   target:'http://39.99.186.36',
+      //   changeOrigin:true,
+      //   pathRewrite:{
+      //     '^/userapi':'/api'
+      //   }
+      // }
     }
   },
 }

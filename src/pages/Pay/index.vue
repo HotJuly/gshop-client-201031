@@ -14,7 +14,7 @@
           </span>
           <span class="fr">
             <em class="lead">应付金额：</em>
-            <em class="orange money">￥{{payInfo.totalFee}}</em>
+            <em class="orange money">￥{{payInfo.payAmount}}</em>
           </span>
         </div>
       </div>
@@ -93,15 +93,20 @@
   import {mapState} from 'vuex'
   export default {
     name: 'Pay',
-
-    computed: {
-      ...mapState({
-        payInfo: state => state.order.payInfo
-      })
+    data(){
+      return {
+        payInfo:{}
+      }
     },
 
-    mounted () {
-      this.$store.dispatch('getPayInfo', this.$route.query.orderId)
+    async mounted () {
+      let result = await this.$API.reqOrderDetail(this.$route.query.orderId);
+      if(result.code===200){
+        this.payInfo=result.data;
+      }else{
+        console.log(result.message||"请求订单详情失败")
+      }
+      // this.$store.dispatch('getPayInfo', this.$route.query.orderId)
     },
 
     methods: {
